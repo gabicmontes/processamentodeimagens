@@ -6,32 +6,23 @@ import cv2
 import numpy as np
 
 class GrabCutGUI(Frame):
-    def __init__(self, master = None):
-        #invoca o construtor da classe pai Frame
         Frame.__init__(self, master)
 
-        #inicializar a interface gráfica
         self.iniciaUI()
 
     def iniciaUI(self):
-        #preparando a janela
         self.master.title("Janela da Imagem Segmentada")
         self.pack()
 
-        #computa ações de mouse
         self.computaAcoesDoMouse()
 
-        #carregando a imagem do disco
         self.imagem = self.carregaImagemASerExibida()
 
-        #criar um canvas que receberá a imagem
         self.canvas = Canvas(self.master, width = self.imagem.width(), height = self.imagem.height(), cursor = "cross")
         
-        #desenhar a imagem que carreguei no canvas
         self.canvas.create_image(0, 0, anchor = NW, image = self.imagem)
-        self.canvas.image = self.imagem #pra imagem não ser removida pelo garbage collector
+        self.canvas.image = self.imagem 
 
-        #posiciona todos os elementos no canvas
         self.canvas.pack()
 
     def computaAcoesDoMouse(self):
@@ -53,7 +44,6 @@ class GrabCutGUI(Frame):
             canvasGrabcut = Canvas(windowGrabcut, width = self.imagem.width(), height = self.imagem.height())
             canvasGrabcut.pack()
             
-            #aply grabcut na imagem
             mask = np.zeros(self.imagemOpenCV.shape[:2], np.uint8)
             rectGcut = (int(self.startX), int(self.startY), int(event.x - self.startX), int(event.y - self.startY))
             
@@ -93,14 +83,11 @@ class GrabCutGUI(Frame):
         currentX = self.canvas.canvasx(event.x)
         currentY = self.canvas.canvasy(event.y)
 
-        #atualiza o retângulo a ser desenhado
         self.canvas.coords(self.rect, self.startX, self.startY, currentX, currentY)
         
-        #verifica se existe o retangulo a ser desenhado
         self.rectangleReady = True
 
     def callbackBotaoPressionado(self, event):
-        #convertendo o x do frame, pro x do canvas e copiando isso em startX
         self.startX = self.canvas.canvasx(event.x)
         self.startY = self.canvas.canvasy(event.y)
 
@@ -110,30 +97,23 @@ class GrabCutGUI(Frame):
     def carregaImagemASerExibida(self):
             caminhoImagem = "img.jpg"
         
-            #se existir a imagem entra no if
             if(caminhoImagem):
                 self.imagemOpenCV = cv2.imread(caminhoImagem)  
 
-            #converte de opencv para o formato PhotoImage
             image = cv2.cvtColor(self.imagemOpenCV, cv2.COLOR_BGR2RGB)
 
-            #converte de OpenCV pra PIL
             image = Image.fromarray(image)
 
-            #converte de PIL pra PhotoImage
             image = ImageTk.PhotoImage(image)
 
             return image
             
 
 def main():
-    #inicializa a Tkinter
     root = Tk()
 
-    #cria a aplicação
     appcut = GrabCutGUI(master = root)
 
-    #cria o loop do programa
     appcut.mainloop()
 
 if __name__ == "__main__":
